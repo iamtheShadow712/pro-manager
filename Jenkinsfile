@@ -1,9 +1,23 @@
 pipeline{
     agent any;
     stages{
-        stage("Checkout Code"){
+        when{
+            branch "develop"
+        }
+        stage("Install Dependencies"){
+            
             steps{
-                echo "Hello world"
+                dir("./client"){
+                    sh "npm install --audit=false"
+                }
+            }
+        }
+
+        stage("Run Audit"){
+             steps{
+                dir("./client"){
+                    sh "npm audit --audit-level=high"
+                }
             }
         }
     }
