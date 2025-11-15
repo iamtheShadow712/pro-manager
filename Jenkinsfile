@@ -7,6 +7,7 @@ pipeline{
         stage("Develop Branch"){
             when{
                 branch "develop"
+                beforeAgent true
             }
             stages{
                 stage("Install Dependencies"){
@@ -27,5 +28,35 @@ pipeline{
                 }
             }
         }
+        stage("Pull Request: develop -> main"){
+            when {
+                changeRequest branch: 'develop', target: 'main'
+                beforeAgent true
+            }
+            stages{
+                stage("Pull Request Number"){
+                    steps{
+                        sh '''
+                            env
+                        '''
+                    }
+                }
+                stage("Install Dependencies"){
+                    steps{
+                        sh '''
+                            npm install --no-audit
+                        '''
+                    }
+                }
+                stage("Audit Dependencies"){
+                    steps{
+                        sh '''
+                            npm audit --audit-level=high
+                        '''
+                    }
+                }
+            }
+        }
+        // stage("")
     }
 }
