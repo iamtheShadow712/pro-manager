@@ -1,5 +1,8 @@
 pipeline{
     agent any;
+    tools {
+        nodejs 'nodejs-v24.0.0'
+    }
     stages{
         stage("Develop Branch"){
             when{
