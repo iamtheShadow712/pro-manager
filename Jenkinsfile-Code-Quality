@@ -1,0 +1,29 @@
+pipeline{
+    agent any;
+    tools {
+        nodejs 'nodejs-v24.0.0'
+    }
+    stages{
+        stage("Install Dependencies"){
+            steps{
+                dir("./client"){
+                    sh "npm install --no-audit"
+                }
+            }
+        }
+
+        stage("Audit npm packages"){
+            steps{
+                dir("./client"){
+                    sh "npm audit --audit-level=high"
+                }
+            }
+        }
+
+        // stage("Owasp Scan"){
+        //     steps{
+                
+        //     }
+        // }
+    }
+}
