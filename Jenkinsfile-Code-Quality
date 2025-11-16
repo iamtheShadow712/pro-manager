@@ -12,7 +12,7 @@ pipeline{
             }
         }
 
-        stage("Audit npm packages"){
+        stage("Run Audit"){
             steps{
                 dir("./client"){
                     sh "npm audit --audit-level=high"
