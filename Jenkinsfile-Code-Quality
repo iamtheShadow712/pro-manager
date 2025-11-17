@@ -5,9 +5,9 @@ pipeline{
     }
     stages{
 
-        stage("Pull Request develop -> main"){
+        stage("Pull Request to main"){
             when{
-                changeRequest target: 'main' branch: 'develop'
+                changeRequest target: 'main'
             }
             steps{
                 sh '''
