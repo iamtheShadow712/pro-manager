@@ -3,60 +3,62 @@ pipeline{
     tools {
         nodejs 'nodejs-v24.0.0'
     }
+    environment {
+        DOCKER_CREDS = credentials("dockerhub-creds")
+        DOCKER_IMAGE_NAME = "${DOCKER_CREDS_USR}/jenkins-client:${GIT_COMMIT}"
+    }
     stages{
-        stage("Develop Branch"){
+        stage("Check for Git Tag"){
+            steps{
+                script{
+                    def tag = sh(returnStdout: true, script: 'git tag --contains').trim()
+                    if (tag != null){
+                        env.GIT_TAG = tag
+                    }else{
+                        env.GIT_TAG = ''
+                    }
+                    echo "Git tag is set to: ${env.GIT_TAG}"
+                    env.IMAGE_RELEASE_TAG = "${DOCKER_IMAGE_NAME}:${GIT_TAG}"
+                }
+            }
+        }
+        // stage("Setup"){
+        //     steps{
+        //         dir('./client'){
+        //             sh "npm install"
+        //         }
+        //     }
+        // }
+        stage("Build and Deploy"){
             when{
-                branch "develop"
-                beforeAgent true
+                expression{
+                    return env.GIT_TAG != ""
+                }
             }
             stages{
-                stage("Install Dependencies"){
-                
+                stage("Login"){
+                    steps{
+                        sh "echo $DOCKER_CREDS_PASS | docker login -u venom712 --password-stdin"
+                        echo "Login Successfull"
+                    }
+                }
+                stage("Build"){
                     steps{
                         dir("./client"){
-                            sh "npm install --no-audit"
+                            sh "docker build -t ${DOCKER_IMAGE_NAME} ."
+                            echo "docker image build successfully"
                         }
                     }
                 }
-
-                stage("Run Audit"){
+                stage("Push to DockerHub"){
                     steps{
-                        dir("./client"){
-                            sh "npm audit --audit-level=high"
+                        withDockerRegistry(credentialsId: 'dockerhub-creds') {
+                            sh "docker push ${DOCKER_IMAGE_NAME}"
+                            echo "Pushed to docker hub"
                         }
                     }
                 }
             }
         }
-        stage("Pull Request: develop -> main"){
-            when {
-                changeRequest branch: 'develop', target: 'main'
-                beforeAgent true
-            }
-            stages{
-                stage("Pull Request Number"){
-                    steps{
-                        sh '''
-                            env
-                        '''
-                    }
-                }
-                stage("Install Dependencies"){
-                    steps{
-                        sh '''
-                            npm install --no-audit
-                        '''
-                    }
-                }
-                stage("Audit Dependencies"){
-                    steps{
-                        sh '''
-                            npm audit --audit-level=high
-                        '''
-                    }
-                }
-            }
-        }
-        // stage("")
     }
 }
