@@ -36,13 +36,6 @@ pipeline{
             //     }
             // }
             stages{
-                stage("Login"){
-                    steps{
-                        sh "echo ${DOCKER_CREDS}"
-                        sh "echo ${DOCKER_CREDS_PASS} | docker login -u ${DOCKER_CREDS_USR} --password-stdin"
-                        echo "Login Successfull"
-                    }
-                }
                 stage("Build"){
                     steps{
                         dir("./client"){
