@@ -30,11 +30,11 @@ pipeline{
         //     }
         // }
         stage("Build and Deploy"){
-            when{
-                expression{
-                    return env.GIT_TAG != ""
-                }
-            }
+            // when{
+            //     expression{
+            //         return env.GIT_TAG != ""
+            //     }
+            // }
             stages{
                 stage("Login"){
                     steps{
