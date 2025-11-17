@@ -7,7 +7,7 @@ pipeline{
 
         stage("Pull Request"){
             when{
-                chagedRequest target: 'main'
+                changeRequest target: 'main'
             }
             steps{
                 sh 'printenv'
