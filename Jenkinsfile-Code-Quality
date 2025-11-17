@@ -4,6 +4,16 @@ pipeline{
         nodejs 'nodejs-v24.0.0'
     }
     stages{
+
+        stage("Pull Request"){
+            when{
+                chagedRequest target: 'main'
+            }
+            steps{
+                sh 'printenv'
+            }
+        }
+
         stage("Install Dependencies"){
             steps{
                 dir("./client"){
@@ -19,6 +29,7 @@ pipeline{
                 }
             }
         }
+
 
         // stage("Owasp Scan"){
         //     steps{
