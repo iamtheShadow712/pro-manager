@@ -5,12 +5,14 @@ pipeline{
     }
     stages{
 
-        stage("Pull Request"){
+        stage("Pull Request develop -> main"){
             when{
-                changeRequest target: 'main'
+                changeRequest target: 'main' branch: 'develop'
             }
             steps{
-                sh 'printenv'
+                sh '''
+                    echo "${GIT_COMMIT}"
+                '''
             }
         }
 
