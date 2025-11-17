@@ -46,7 +46,7 @@ pipeline{
                 }
                 stage("Push to DockerHub"){
                     steps{
-                        withDockerRegistry(credentialsId: 'dockerhub-creds') {
+                        withDockerRegistry(url:"", credentialsId: 'dockerhub-creds') {
                             sh "docker push ${DOCKER_IMAGE_NAME}"
                             echo "Pushed to docker hub"
                         }
